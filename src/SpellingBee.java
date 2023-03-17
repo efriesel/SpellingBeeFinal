@@ -35,7 +35,6 @@ public class SpellingBee {
     public static final int DICTIONARY_SIZE = 143091;
     public static final String[] DICTIONARY = new String[DICTIONARY_SIZE];
 
-    private static final int MAX_LETTERS = 5;
 
     public SpellingBee(String letters) {
         this.letters = letters;
@@ -65,30 +64,51 @@ public class SpellingBee {
     public void genWords(int start, String word, String letters){
         if (letters.length() == 0 || start == letters.length())
             return;
-//        if (word.length() == MAX_LETTERS || start == letters.length())
-//            return;
-        if (word.length() >= 3 && word.charAt(word.length() - 1) == word.charAt(word.length() - 2) && word.charAt(word.length() - 2) == word.charAt(word.length() - 3))
-            return;
         genWords(start + 1, word, letters);
         word = word + letters.charAt(start);
         words.add(word);
-//        genWords(0, word, letters);
         genWords(0, word, letters.substring(0, start) + letters.substring(start + 1));
     }
 
     // TODO: Apply mergesort to sort all words. Do this by calling ANOTHER method
     //  that will find the substrings recursively.
+
+    /**
+     * this method will call a recursive method that will return a sorted ArrayList of Strings
+     */
     public void sort() {
+        //the returned ArrayList will be assigned to the words instance variable
         words = mergeSort(words);
     }
+
+    /**
+     * This function will recursively call itself until the list is sorted
+     * Each call, the base case will be when an inputted ArrayList is of size one
+     * The "mid" integer variable will split the inputted ArrayList into two different ArrayLists
+     * Each ArrayList will call the mergeSort method on itself
+     * When the two split ArrayLists are returned, they are merged and returned
+     * @param words (an ArrayList of Strings)
+     * @return (An ArrayList that is either of size one or merged)
+     */
     public ArrayList<String> mergeSort(ArrayList<String> words){
+        // base case
         if (words.size() == 1)
             return words;
+        // reused variable
         int mid = words.size() / 2;
+        // split two arrays in half and recursively call method
         ArrayList<String> list1 = mergeSort(new ArrayList<>(words.subList(0 , mid)));
         ArrayList<String> list2 = mergeSort(new ArrayList<>(words.subList(mid, words.size())));
+        // for non-base case scenarios, after all recursive methods complete, increasingly merge each array
         return merge(list1, list2);
     }
+
+    /**
+     * This method will return a single ArrayList of Strings consisting of two inputted ArrayLists
+     * @param list1 (One inputted list)
+     * @param list2 (Another inputted list)
+     * @return (the returned ArrayList will be sorted from least to greatest Strings using the compareTo function)
+     */
     public ArrayList<String> merge(ArrayList<String> list1, ArrayList<String> list2){
         ArrayList<String> words = new ArrayList<>();
         int i = 0, j = 0;
@@ -132,7 +152,7 @@ public class SpellingBee {
         // YOUR CODE HERE
         int i = 0;
         while (i < words.size()){
-            //words.get(i).indexOf(letters.charAt(0)) == -1 || words.get(i).length() < 5 ||
+
             if (!binarySearch(words.get(i)))
                 words.remove(i);
             else
