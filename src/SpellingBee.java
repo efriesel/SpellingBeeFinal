@@ -41,10 +41,6 @@ public class SpellingBee {
         words = new ArrayList<String>();
     }
 
-    // TODO: generate all possible substrings and permutations of the letters.
-    //  Store them all in the ArrayList words. Do this by calling ANOTHER method
-    //  that will find the substrings recursively.
-
     /**
      * This function will generate all words that use only chars from the letters string
      * Note - Each letter can only be used once
@@ -62,16 +58,17 @@ public class SpellingBee {
      * @param letters (the remaining characters in the inputted string of characters)
      */
     public void genWords(int start, String word, String letters){
+        // base case if all letters have been used or the index is past the length
         if (letters.length() == 0 || start == letters.length())
             return;
+        // have one path skip the letter in the letters and redeclare genWords with start + 1
         genWords(start + 1, word, letters);
+        // have one path add the current letter to the current word and add the word to words
+        // Then, recall genWords with a string that has the current letter removed (so it is not reused)
         word = word + letters.charAt(start);
         words.add(word);
         genWords(0, word, letters.substring(0, start) + letters.substring(start + 1));
     }
-
-    // TODO: Apply mergesort to sort all words. Do this by calling ANOTHER method
-    //  that will find the substrings recursively.
 
     /**
      * this method will call a recursive method that will return a sorted ArrayList of Strings
@@ -110,11 +107,16 @@ public class SpellingBee {
      * @return (the returned ArrayList will be sorted from least to greatest Strings using the compareTo function)
      */
     public ArrayList<String> merge(ArrayList<String> list1, ArrayList<String> list2){
+        // create a new ArrayList that will house the combined sorted values of both inputted ArrayLists
         ArrayList<String> words = new ArrayList<>();
         int i = 0, j = 0;
+        // while both lists still have elements
         while (i < list1.size() && j < list2.size()){
+            // whichever list's current element is larger given the compareTo function
+            // add that element to the grand list
             if (list1.get(i).compareTo(list2.get(j)) > 0) {
                 words.add(list2.get(j));
+                // after the element is added, only increment the list that had an element used in the grand list
                 j++;
             }
             else {
@@ -122,6 +124,7 @@ public class SpellingBee {
                 i++;
             }
         }
+        // after one list is used up, a while loop will iterate through the rest of the not-empty list
         while (i < list1.size()){
             words.add(list1.get(i));
             i++;
@@ -146,33 +149,51 @@ public class SpellingBee {
         }
     }
 
-    // TODO: For each word in words, use binary search to see if it is in the dictionary.
-    //  If it is not in the dictionary, remove it from words.
+    /**
+     * This function will check if each word in the dictionary array, and remove the word iff the word is not present
+     */
     public void checkWords() {
-        // YOUR CODE HERE
         int i = 0;
+        // use a while loop due to the fluctuating size of words ArrayList
         while (i < words.size()){
-
             if (!binarySearch(words.get(i)))
                 words.remove(i);
+            // only increment if a word was not removed
             else
                 i++;
         }
     }
+
+    /**
+     * This function will call the recursive method search, which will use binary search
+     * The search will find if the inputted String is present in the Dictionary Array.
+     * @param s (the inputted String)
+     * @return (a boolean that will return true iff the inputted String is in the dictionary)
+     */
     public boolean binarySearch(String s){
         return search(s, 0, DICTIONARY_SIZE - 1);
     }
 
+    /**
+     * This function will use binary search to find if the inputted word is in the sorted dictionary array
+     * @param s (the inputted string)
+     * @param low (the low index of the range of possible words in the dictionary)
+     * @param high (the high index of the range of possible words in the dictionary)
+     * @return (a boolean true iff the target word is found in the array)
+     */
     public boolean search(String s, int low, int high){
+        // base case if the word is not present and the range of indexes is < 1)
         if (low > high){
             return false;
         }
+        // set global med integer for no reused equations
         int med = (high + low) / 2;
-        String current = DICTIONARY[med];
-        if (current.equals(s))
+        if (DICTIONARY[med].equals(s))
             return true;
-        if (current.compareTo(s) < 0)
+        // if the compare to is greater, set the minimum index of the range to one greater than the mid
+        if (DICTIONARY[med].compareTo(s) < 0)
             return search(s, med + 1, high);
+        // else, make the high the med - 1
         else
             return search(s, low, med - 1);
     }
